@@ -94,19 +94,6 @@ class LEDControl(Thread,Logger):
         else:
             self.debug(f'LED mode {mode} not found')
 
-    @registerMode('White Blink')
-    def eyeBlink(self):
-        "eye blink"
-        state = 0
-        last = self._FPS 
-        while 1:
-            if last:
-                yield [[state * 255,state * 255,state * 255]]*self.eyeLength
-                last -= 1
-            if last == 0:
-                state = 1 if state == 0 else 0
-                last = self._FPS
-
     @registerMode('Random Blink')
     def eyeBlinkRand(self):
         "eye blink"
