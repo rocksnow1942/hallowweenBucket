@@ -60,6 +60,7 @@ class LEDControl(Thread,Logger):
         self.brightness = 70 # between 0 - 100
         self.fullrandom=True
         self.fullrandomDuration = 120 # seconds
+        self.randomModeSelect()
     
     @property
     def eyeLength(self):
