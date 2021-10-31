@@ -7,16 +7,57 @@
     <title>Control Page</title>
 </head>
 <body>
-    <h1>Control Panel</h1>
-    <button id='mode1'>
-        Mode 1
-    </button>
-
+    <style>
+        h5 {            
+            margin: 10px;
+            font-size: 28px;
+        }
+        #control-grid {
+            display:flex;
+            flex-wrap: wrap;
+            justify-content: center;            
+        }
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px 20px;
+            margin: 0.4em;
+            text-align: center;                        
+            font-size: 16px;            
+        }
+        button:hover {
+            background-color: #3c8d3f;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            color: white;
+            cursor: not-allowed;
+        }
+        
+    </style>
+    <h5 style="text-align: center;">Eye Control</h5>
+    <div id='control-grid'>    
+    {% for btnName,mode in EYE %}
+        <button id='{{mode}}'>{{btnName}}</button>
+    {% endfor %}  
+    </div>
+    <hr>
+    <h5 style="text-align: center;">Ring Control</h5>
+    <div id='control-grid'>       
+        {% for btnName,mode in RING %}
+            <button id='{{mode}}'>{{btnName}}</button>
+        {% endfor %}
+    
+        </div>
     <script>
-        // var websocketAddr = `ws://${window.location.hostname}:8877`
+        var websocketAddr = `ws://${window.location.hostname}:8877`
         if (window.location.hostname.includes('127.0.0.1')) {
             websocketAddr = `ws://ams-qcj.local:8877`
-        }                
+        }
     </script>
     <script src="index.js"></script>
 </body>

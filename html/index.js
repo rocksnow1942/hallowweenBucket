@@ -1,11 +1,21 @@
-console.log('hellow js!')
 
-var $ = document.getElementById.bind(document)
+
 
 class App {
     constructor () {
         this.ws = new WebSocket(websocketAddr);
-        this.addEventListener()
+        this.ws.onopen = () => {
+            console.log('connected');
+            this.addEventListener()
+        };     
+        this.ws.onerror = (err) => {
+            console.log('error', err);      
+            const buttons = document.getElementsByTagName('button')
+            for (let button of buttons){
+                button.disabled = true
+            }
+
+        };   
     }
     
     send(msg) {        
@@ -19,16 +29,17 @@ class App {
 
     addEventListener (){
 
-        $('mode1').addEventListener('click', () => {
+      const buttons = document.getElementsByTagName('button')
+      for (let button of buttons){
+          button.disabled = false
+        button.addEventListener('click', (e) => {            
             this.send({
-                action: 'led.show',
-                mode: 'toogle mode 1'
+                action:'led.show',
+                mode: e.target.id
             })
-        })
 
-    
-    
-    
+        })
+      }
     
     }
 }

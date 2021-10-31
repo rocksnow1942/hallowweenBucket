@@ -7,6 +7,7 @@ from pathlib import Path
 import mimetypes
 import zlib
 from Logger import Logger
+from ledControl import MODES
 
 def handler(Master):
     class SimpleHandler(BaseHTTPRequestHandler):
@@ -49,8 +50,17 @@ def handler(Master):
             # display LED flash.
             # self.logger.main.peripheral.led.show('wifi',[50,1],1,)
             path = self.path.strip('/') or 'index.html'
-            self.sendFileOr404(path)
-            
+            if path == 'index.html':
+                self.sendHTML(self.render('index.html',EYE=MODES['eye'],RING=MODES['ring']))
+            else:
+                self.sendFileOr404(path)
+        
+        def render(self,filepath,*args,**kwargs):
+            "render with jinja2"           
+            if self.logger.resources.get(filepath,None):
+                template = self.logger.resources.get(filepath)
+                return Template(template.decode()).render(*args,**kwargs).encode()
+            return "Page Not Found.".encode()
 
         def sendFileOr404(self,filePath,mode='html'):
             header = mimetypes.guess_type(filePath)[0] or 'application/json'
