@@ -128,6 +128,19 @@ class LEDControl(Thread,Logger):
             # keep dark for 0.3 seconds
             for _ in range(self.frames(duration = 0.5)):
                 yield [self.color('black')]* self.eyeLength
+
+    @registerMode('Twin Breath')
+    def eyeBreathTwinRand(self):
+        "eye breath"                
+        while 1:
+            c1 = self.color() 
+            c2 = self.color() 
+            eye  = [c1,c1,c2,c2]
+            for e in zip(*[self.breath(i,duration=1.8,end=[j*0.1 for j in i]) for i in eye]):
+                yield e
+            # keep dark for 0.3 seconds
+            for _ in range(self.frames(duration = 0.5)):
+                yield [[j*0.1 for j in i] for i in eye]
     
     @registerMode('Cycle Breath')
     def eyeBreathCycle(self):
@@ -177,10 +190,10 @@ class LEDControl(Thread,Logger):
             yield [ fi + (ti-fi) / (frames-1) * i  for fi,ti in zip(f,t)]
             
 
-    def breath(self,color=[255,255,255],duration=1):
+    def breath(self,color=[255,255,255],duration=1,end=[0,0,0],):
         "breath effect, from dark to color, then back to dark, total last for duration seconds"
-        yield from self.transition([0,0,0],color,duration/2)
-        yield from self.transition(color,[0,0,0],duration/2)
+        yield from self.transition(end,color,duration/2)
+        yield from self.transition(color,end,duration/2)
     
         
     
