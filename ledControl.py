@@ -156,8 +156,8 @@ class LEDControl(Thread,Logger):
                     for _ in range(self.frames(duration = 0.5)):
                         yield [self.color('black')]* self.eyeLength
 
-    @registerMode('Wheel')
-    def ringFireWheel(self):
+    @registerMode('Random Wheel')
+    def ringRandomWheel(self):
         "cycle ring"
         current = 0
         onCount = 2
@@ -182,6 +182,20 @@ class LEDControl(Thread,Logger):
             current += 1
             if current > self.ringLength:
                 current = 0
+
+    @registerMode('Breath')
+    def ringBreathCycle(self):
+        while 1:
+            for color in ['red','green','blue','cyan','purple','white']:
+                # blink random times then change color 
+                for i in range(random.randint(1,3)):                                                
+                    ring  = [self.color(color) for i in range(self.ringLength)]
+                    for e in zip(*[self.breath(i,duration=3) for i in ring]):
+                        yield e
+                    # keep dark for 0.3 seconds
+                    for _ in range(self.frames(duration = 0.5)):
+                        yield [[j*0.002 for j in i] for i in ring]
+
 
     def transition(self,f,t,duration):
         "transition from f to t, over duration seconds"
@@ -218,18 +232,23 @@ class LEDControl(Thread,Logger):
             self.eyeGenerator = None
             return [[0,0,0]]*(len(self._EYE_ORDER))
 
-    def Brightness(self,color):
+    def Brightness(self,color,dim=False):
         "adjust brightness, the color I will just use 0 - 255"
-        return [max(0,min(int(65535/255*c*self.brightness/100),65535)) for c in color]
+        if dim:
+            brightness = self.brightness
+        else:
+            brightness = 100
+        return [max(0,min(int(65535/255*c*brightness/100),65535)) for c in color]
 
     def run(self):
         while 1:
             t0 = timer()
             r = self.getNextRingState()
             e = self.getNextEyeState()
-            ns = list(r) + list(e)            
+            # only adjust brightness for the eyle leds
+            ns = [self.Brightness(n,dim=True) for n in r]  + [self.Brightness(n,dim=True) for n in e]
             for i,n in zip(self._ORDER,ns):
-                self.pixels.set_pixel(i,self.Brightness(n))                                        
+                self.pixels.set_pixel(i,n)
             self.pixels.show()
             dt = timer()-t0
             if dt < 1/self._FPS:
