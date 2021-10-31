@@ -11,7 +11,7 @@ import subprocess
 
 class Main(Logger):
     def __init__(self):        
-        fh = systemLogFile('halloween.log')
+        fh = systemLogFile('system.log')
         self.fileHandler = fh
         super().__init__('main',fileHandler=fh)
 
