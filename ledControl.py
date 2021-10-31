@@ -14,7 +14,7 @@ class LEDControl(Thread,Logger):
         self.pixels = adafruit_tlc59711.TLC59711(spi, pixel_count=12)
     
     def show(self,mode=''):
-        self.debug('Shoing LED mode', mode)
+        self.debug(f'Showing LED mode {mode}')
     
         
     def run(self):
