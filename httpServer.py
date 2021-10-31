@@ -48,7 +48,7 @@ def handler(Master):
             """Respond to a GET request."""
             # display LED flash.
             # self.logger.main.peripheral.led.show('wifi',[50,1],1,)
-            path = self.path.strip('/') or 'index'
+            path = self.path.strip('/') or 'index.html'
             self.sendFileOr404(path)
             
 
@@ -81,7 +81,8 @@ class HttpServerModule(Thread,Logger):
                 fp = os.path.join(root,file)
                 relative_path = str(Path(fp).relative_to('./html'))
                 with open(fp,'rb') as f:
-                    self.resources[relative_path] = f.read()        
+                    self.resources[relative_path] = f.read()
+        self.debug(f"Loaded {len(self.resources)} resources. {list(self.resources.keys())}")
         
     def run(self):        
         self.httpServer = None

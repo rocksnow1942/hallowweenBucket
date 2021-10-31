@@ -149,17 +149,10 @@ class ClientModule(Thread,Logger):
             self.error(f'Initiate websocket server error:{e}')
             self.websocketStatus = 'error'
 
-        self.bluetoothStatus = 'disabled'
-        # self.bluetoothStatus = 'starting'
-        # try:
-        #     self.bluetoothServer = BluetoothServer(port=bluetoothPort, uuid=bluetoothUUID,listen=bluetoothListen, logger=self)
-        # except Exception as e:
-        #     self.error(f"initiate bluetooth server error:{e}")
-        #     self.bluetoothStatus = 'error'
     
     def run(self):
         self.initialize()
-        try:
+        try:            
             self.websocketServer.startInLoop(self.main.mainLoop) 
         except Exception as e:
             self.logger.error(f"ClientModule.run: start websocket error: {e}")
