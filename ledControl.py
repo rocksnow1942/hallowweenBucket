@@ -54,7 +54,7 @@ class LEDControl(Thread,Logger):
         Logger.__init__(self,'LED',fileHandler = self.main.fileHandler)
         spi = busio.SPI(board.SCK, MOSI=board.MOSI)
         self.pixels = adafruit_tlc59711.TLC59711(spi, pixel_count=12)
-        self._FPS = 20       
+        self._FPS = 24     
         self.ringGenerator = None
         self.eyeGenerator = None
         self.brightness = 100 # between 0 - 100
@@ -135,7 +135,7 @@ class LEDControl(Thread,Logger):
         while 1:
             for color in ['red','green','blue','cyan','purple','white']:
                 # blink random times then change color 
-                for i in range(random.randint(2,5)):                                                
+                for i in range(random.randint(1,5)):                                                
                     eye  = [self.color(color) for i in range(self.eyeLength)]
                     for e in zip(*[self.breath(i,duration=1.8) for i in eye]):
                         yield e
@@ -143,7 +143,31 @@ class LEDControl(Thread,Logger):
                     for _ in range(self.frames(duration = 0.5)):
                         yield [self.color('black')]* self.eyeLength
 
-        
+    @registerMode('Wheel')
+    def ringFireWheel(self):
+        "cycle ring"
+        current = 0
+        onCount = 2
+        transitionTime = 2
+        currentColor = self.color('green')
+        colorTransition = self.transition(self.color('white'),self.color('green'),transitionTime)
+        while 1:
+            newState = [self.color('black')] * self.ringLength
+            for i in range(current,current+onCount):
+                idx = i % self.ringLength
+                try:
+                    color = next(colorTransition)
+                except StopIteration:
+                    newColor = self.randColor()
+                    colorTransition = self.transition(currentColor,newColor,transitionTime)
+                    currentColor = newColor
+                    color = next(colorTransition)
+                newState[idx] = color
+            yield newState
+            current += 1
+            if current > self.ringLength:
+                current = 0
+
     def transition(self,f,t,duration):
         "transition from f to t, over duration seconds"
         frames = self.frames(duration)
