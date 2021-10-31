@@ -135,7 +135,7 @@ class ClientModule(Thread,Logger):
     "Serving connection via bluetooth or wifi, via websockets."
     def __init__(self,main):
         self.main = main
-        super().__init__()
+        super().__init__(daemon=True)
         Logger.__init__(self,'client',fileHandler=main.fileHandler)
         
     def initialize(self,**kwargs):

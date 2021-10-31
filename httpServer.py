@@ -68,7 +68,7 @@ class HttpServerModule(Thread,Logger):
     """
     def __init__(self,main):
         self.main = main
-        super().__init__()
+        super().__init__(daemon=True)
         Logger.__init__(self,'http',fileHandler = self.main.fileHandler)
         self.initialize()
 
