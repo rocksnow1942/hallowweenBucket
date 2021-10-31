@@ -5,6 +5,7 @@ import busio
 import adafruit_tlc59711
 from time import perf_counter as timer
 import time
+import random
 
 MODES = {'eye':[],'ring':[]}
 
@@ -43,6 +44,16 @@ class LEDControl(Thread,Logger):
         self.eyeGenerator = None
         self.brightness = 100 # between 0 - 100
     
+    @property
+    def eyeLength(self):
+        return len(self._EYE_ORDER)
+    @property
+    def ringLength(self):
+        return len(self._RING_ORDER)
+
+    def randColor(self):
+        return random.randint(0,255)
+
     def show(self,mode=''):
         self.debug(f'Showing LED mode {mode}')
         if mode.startswith('eye'):
@@ -59,7 +70,20 @@ class LEDControl(Thread,Logger):
         last = self._FPS 
         while 1:
             if last:
-                yield [[state * 255,state * 255,state * 255]]*(len(self._EYE_ORDER))
+                yield [[state * 255,state * 255,state * 255]]*self.eyeLength
+                last -= 1
+            if last == 0:
+                state = 1 if state == 0 else 0
+                last = self._FPS
+
+    @registerMode('Random')
+    def eyeBlinkRand(self):
+        "eye blink"
+        state = 0
+        last = self._FPS / 2
+        while 1:
+            if last:
+                yield [[state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
                 last -= 1
             if last == 0:
                 state = 1 if state == 0 else 0
