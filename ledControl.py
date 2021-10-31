@@ -53,8 +53,7 @@ class LEDControl(Thread,Logger):
         Logger.__init__(self,'LED',fileHandler = self.main.fileHandler)
         spi = busio.SPI(board.SCK, MOSI=board.MOSI)
         self.pixels = adafruit_tlc59711.TLC59711(spi, pixel_count=12)
-        self._FPS = 24
-        self.state = [[0,0,0]]*(len(self._ORDER))
+        self._FPS = 24        
         self.ringGenerator = None
         self.eyeGenerator = None
         self.brightness = 100 # between 0 - 100
@@ -123,10 +122,10 @@ class LEDControl(Thread,Logger):
         "eye breath"                
         while 1:
             eye  = [self.color() for i in range(self.eyeLength)]
-            for e in zip(*[self.breath(i,duration=1) for i in eye]):
+            for e in zip(*[self.breath(i,duration=1.8) for i in eye]):
                 yield e
             # keep dark for 0.3 seconds
-            for _ in range(self.frames(duration = 0.3)):
+            for _ in range(self.frames(duration = 0.5)):
                 yield [self.color('black')]* self.eyeLength
     
 
@@ -143,9 +142,6 @@ class LEDControl(Thread,Logger):
         yield from self.transition([0,0,0],color,duration/2)
         yield from self.transition(color,[0,0,0],duration/2)
     
-        
-
-
         
         
     
@@ -179,12 +175,9 @@ class LEDControl(Thread,Logger):
             t0 = timer()
             r = self.getNextRingState()
             e = self.getNextEyeState()
-            ns = list(r) + list(e)
-            print(ns)
-            for idx,(i,n,o) in enumerate(zip(self._ORDER,ns,self.state)):
-                if n != o:                    
-                    self.pixels.set_pixel(i,self.Brightness(n))
-                    self.state[idx] = n
+            ns = list(r) + list(e)            
+            for i,n in zip(self._ORDER,ns):
+                self.pixels.set_pixel(i,self.Brightness(n))                                        
             self.pixels.show()
             dt = timer()-t0
             if dt < 1/self._FPS:
