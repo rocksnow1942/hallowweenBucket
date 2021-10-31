@@ -81,13 +81,15 @@ class LEDControl(Thread,Logger):
         "eye blink"
         state = 0
         last = self._FPS / 2
+        eyc = [ [state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
         while 1:
             if last:
-                yield [[state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
+                yield eyc
                 last -= 1
             if last == 0:
                 state = 1 if state == 0 else 0
                 last = self._FPS
+                eyc = [ [state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
             
     
     def getNextRingState(self):
