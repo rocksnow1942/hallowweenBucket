@@ -58,6 +58,8 @@ class LEDControl(Thread,Logger):
         self.ringGenerator = None
         self.eyeGenerator = None
         self.brightness = 70 # between 0 - 100
+        self.fullrandom=True
+        self.fullrandomDuration = 120 # seconds
     
     @property
     def eyeLength(self):
@@ -80,6 +82,10 @@ class LEDControl(Thread,Logger):
 
     def show(self,mode=''):
         self.debug(f'Showing LED mode {mode}')
+        if mode == 'eyeFullRandomON':
+            self.fullrandom=True
+            return
+        self.fullrandom=False
         if mode.startswith('eye'):
             self.eyeGenerator = getattr(self,mode,lambda x:None)()
         elif mode.startswith('ring'):
@@ -118,6 +124,11 @@ class LEDControl(Thread,Logger):
                 else:
                     eyc = [ [0,0,0] ] * self.eyeLength
 
+    @registerMode('Full random')
+    def eyeFullRandomON(self):
+        "random color"
+        pass
+    
     @registerMode('Random Breath')
     def eyeBreathRand(self):
         "eye breath"                
@@ -241,7 +252,16 @@ class LEDControl(Thread,Logger):
             brightness = 100
         return [max(0,min(int(65535/255*c*brightness/100),65535)) for c in color]
 
+    def randomModeSelect(self):
+        "random mode select"
+        eye = random.choice([i for i in MODES['eye'] if i!='eyeFullRandomON'])[1]
+        ring = random.choice(MODES['ring'])[1]
+        self.show(eye)
+        self.show(ring)
+
+
     def run(self):
+        tStart = timer()
         while 1:
             t0 = timer()
             r = self.getNextRingState()
@@ -258,5 +278,11 @@ class LEDControl(Thread,Logger):
                 self.debug(f'LED update took {dt}s')
 
 
-        
+
+            if self.fullrandom and t0-tStart > self.fullrandomDuration:
+                tStart = timer()
+                self.randomModeSelect()
+                
+
+                
     

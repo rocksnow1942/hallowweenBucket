@@ -54,7 +54,7 @@ class Main(Logger):
                 # self.enableAP()
            
 
-
+# /home/pi/hallowweenBucket/main.py
 if __name__ == '__main__':
     main = Main()
     main.start()
