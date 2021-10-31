@@ -133,7 +133,7 @@ class LEDControl(Thread,Logger):
         
     def transition(self,f,t,duration):
         "transition from f to t, over duration seconds"
-        frames = int(duration*self._FPS)
+        frames = self.frames(duration)
         for i in range(frames):
             yield [ fi + (ti-fi) / (frames-1) * i  for fi,ti in zip(f,t)]
             
@@ -180,6 +180,7 @@ class LEDControl(Thread,Logger):
             r = self.getNextRingState()
             e = self.getNextEyeState()
             ns = list(r) + list(e)
+            print(ns)
             for idx,(i,n,o) in enumerate(zip(self._ORDER,ns,self.state)):
                 if n != o:                    
                     self.pixels.set_pixel(i,self.Brightness(n))
