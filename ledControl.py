@@ -54,7 +54,7 @@ class LEDControl(Thread,Logger):
         Logger.__init__(self,'LED',fileHandler = self.main.fileHandler)
         spi = busio.SPI(board.SCK, MOSI=board.MOSI)
         self.pixels = adafruit_tlc59711.TLC59711(spi, pixel_count=12)
-        self._FPS = 24        
+        self._FPS = 20       
         self.ringGenerator = None
         self.eyeGenerator = None
         self.brightness = 100 # between 0 - 100
