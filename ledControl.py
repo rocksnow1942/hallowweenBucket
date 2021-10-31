@@ -134,12 +134,14 @@ class LEDControl(Thread,Logger):
         "eye breath"                
         while 1:
             for color in ['red','green','blue','cyan','purple','white']:
-                eye  = [self.color(color) for i in range(self.eyeLength)]
-                for e in zip(*[self.breath(i,duration=1.8) for i in eye]):
-                    yield e
-                # keep dark for 0.3 seconds
-                for _ in range(self.frames(duration = 0.5)):
-                    yield [self.color('black')]* self.eyeLength
+                # blink random times then change color 
+                for i in range(random.randint(2,5)):                                                
+                    eye  = [self.color(color) for i in range(self.eyeLength)]
+                    for e in zip(*[self.breath(i,duration=1.8) for i in eye]):
+                        yield e
+                    # keep dark for 0.3 seconds
+                    for _ in range(self.frames(duration = 0.5)):
+                        yield [self.color('black')]* self.eyeLength
 
         
     def transition(self,f,t,duration):
