@@ -47,6 +47,7 @@ class LEDControl(Thread,Logger):
             'pink':[255,192,203],
             'brown':[165,42,42],            
         }
+    _COLOR_NAMES = ['red','green','blue','yellow','cyan','purple','white','orange','pink','brown']
     def __init__(self,main):
         self.main = main
         super().__init__(daemon=True)
@@ -71,7 +72,7 @@ class LEDControl(Thread,Logger):
     def color(self,name=None):
         "return a named color"
         if not name:
-            name = random.choice(list(self._NAMED_COLOR.keys()))            
+            name = random.choice(self._COLOR_NAMES)            
         return self._NAMED_COLOR.get(name,[0,0,0])
 
     def randColor(self):
