@@ -84,16 +84,18 @@ class HttpServerModule(Thread,Logger):
                     self.resources[relative_path] = f.read()        
         
     def run(self):        
+        self.httpServer = None
         try:
             serverAddress = ('localhost',88)
             self.httpServer = HTTPServer(serverAddress,handler(self)) 
             self.debug(f"Started HttpServer on: {serverAddress[0]}:{serverAddress[1]}")
             self.httpServer.serve_forever() 
         except PermissionError:            
-            self.debug(f"Started HttpServer on: {serverAddress[0]}:{serverAddress[1]}")            
+            self.error(f"Started HttpServer on: {serverAddress[0]}:{serverAddress[1]} Permission error")
         except Exception as e:
             self.error(f"Start HttpServer on {serverAddress[0]}:{serverAddress[1]} error: {e}")
         # release binding socket.
-        self.httpServer.socket.close()
-        self.debug(f"<{self.__class__.__name__}> stopped.")
+        if self.httpServer:
+            self.httpServer.socket.close()
+            self.debug(f"<{self.__class__.__name__}> stopped.")
     
