@@ -12,7 +12,7 @@ import subprocess
 class Main(Logger):
     def __init__(self):        
         fh = systemLogFile('halloween.log')
-        self.fh = fh
+        self.fileHandler = fh
         super().__init__('main',fileHandler=fh)
 
         # init GPIO

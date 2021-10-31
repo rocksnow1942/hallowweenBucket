@@ -136,7 +136,7 @@ class ClientModule(Thread,Logger):
     def __init__(self,main):
         self.main = main
         super().__init__()
-        Logger.__init__(self,'client',fileHandler=main.fh)
+        Logger.__init__(self,'client',fileHandler=main.fileHandler)
         
     def initialize(self,**kwargs):
         ""
