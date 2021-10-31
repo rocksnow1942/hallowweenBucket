@@ -136,11 +136,11 @@ class LEDControl(Thread,Logger):
             c1 = self.color() 
             c2 = self.color() 
             eye  = [c1,c1,c2,c2]
-            for e in zip(*[self.breath(i,duration=1.8,end=[j*0.1 for j in i]) for i in eye]):
+            for e in zip(*[self.breath(i,duration=1.8,end=[j*0.01 for j in i]) for i in eye]):
                 yield e
             # keep dark for 0.3 seconds
             for _ in range(self.frames(duration = 0.5)):
-                yield [[j*0.1 for j in i] for i in eye]
+                yield [[j*0.01 for j in i] for i in eye]
     
     @registerMode('Cycle Breath')
     def eyeBreathCycle(self):
