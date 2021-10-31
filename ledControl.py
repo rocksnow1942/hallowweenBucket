@@ -185,7 +185,7 @@ class LEDControl(Thread,Logger):
 
     @registerMode('Breath')
     def ringBreathCycle(self):
-        dimPercent = 0.1
+        dimPercent = 0.03
         while 1:
             for color in ['red','green','blue','cyan','purple','white']:
                 # blink random times then change color 
