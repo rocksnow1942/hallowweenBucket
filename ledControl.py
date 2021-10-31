@@ -59,7 +59,7 @@ class LEDControl(Thread,Logger):
         last = self._FPS 
         while 1:
             if last:
-                yield [state * 255,state * 255,state * 255]*(len(self._EYE_ORDER))
+                yield [[state * 255,state * 255,state * 255]]*(len(self._EYE_ORDER))
                 last -= 1
             if last == 0:
                 state = 1 if state == 0 else 0
