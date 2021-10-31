@@ -123,7 +123,7 @@ class LEDControl(Thread,Logger):
         "eye breath"                
         while 1:
             eye  = [self.color() for i in range(self.eyeLength)]
-            for e in zip(self.breath(i,duration=1) for i in eye):
+            for e in zip(*[self.breath(i,duration=1) for i in eye]):
                 yield e
             # keep dark for 0.3 seconds
             for _ in range(self.frames(duration = 0.3)):
