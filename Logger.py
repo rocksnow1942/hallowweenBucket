@@ -19,7 +19,7 @@ class Logger():
     def error(self, x): return 0
     def critical(self, x): return 0
 
-    def __init__(self,saveName, logLevel='INFO', printMessages = True,fileHandler=None, **kwargs):
+    def __init__(self,saveName, logLevel='DEBUG', printMessages = True,fileHandler=None, **kwargs):
         self.PRINT_MESSAGES = printMessages
         self.LOG_LEVEL = logLevel
 
