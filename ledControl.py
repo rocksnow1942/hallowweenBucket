@@ -129,6 +129,17 @@ class LEDControl(Thread,Logger):
             for _ in range(self.frames(duration = 0.5)):
                 yield [self.color('black')]* self.eyeLength
     
+    @registerMode('Cycle Breath')
+    def eyeBreathCycle(self):
+        "eye breath"                
+        while 1:
+            for color in ['red','green','blue','cyan','purple','white']:
+                eye  = [self.color(color) for i in range(self.eyeLength)]
+                for e in zip(*[self.breath(i,duration=1.8) for i in eye]):
+                    yield e
+                # keep dark for 0.3 seconds
+                for _ in range(self.frames(duration = 0.5)):
+                    yield [self.color('black')]* self.eyeLength
 
         
     def transition(self,f,t,duration):
@@ -143,7 +154,6 @@ class LEDControl(Thread,Logger):
         yield from self.transition([0,0,0],color,duration/2)
         yield from self.transition(color,[0,0,0],duration/2)
     
-        
         
     
     def getNextRingState(self):
