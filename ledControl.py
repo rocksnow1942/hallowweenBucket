@@ -41,6 +41,7 @@ class LEDControl(Thread,Logger):
         self.state = [[0,0,0]]*(len(self._ORDER))
         self.ringGenerator = None
         self.eyeGenerator = None
+        self.brightness = 100 # between 0 - 100
     
     def show(self,mode=''):
         self.debug(f'Showing LED mode {mode}')
@@ -54,11 +55,16 @@ class LEDControl(Thread,Logger):
     @registerMode('Blink')
     def eyeBlink(self):
         "eye blink"
-        
-
-
-
-
+        state = 0
+        last = self._FPS 
+        while 1:
+            if last:
+                yield [state * 255,state * 255,state * 255]*(len(self._EYE_ORDER))
+                last -= 1
+            if last == 0:
+                state = 1 if state == 0 else 0
+                last = self._FPS
+            
     
     def getNextRingState(self):
         "return next ring state"
@@ -81,6 +87,10 @@ class LEDControl(Thread,Logger):
             self.eyeGenerator = None
             return [[0,0,0]]*(len(self._EYE_ORDER))
 
+    def Brightness(self,color):
+        "adjust brightness, the color I will just use 0 - 255"
+        return [max(0,min(int(65535/255*c*self.brightness/100),65535)) for c in color]
+
     def run(self):
         while 1:
             t0 = timer()
@@ -89,7 +99,7 @@ class LEDControl(Thread,Logger):
             ns = r + e
             for i,n,o in zip(self._ORDER,ns,self.state):
                 if n != o:                    
-                    self.pixels.set_pixel(i,n)
+                    self.pixels.set_pixel(i,self.Brightness(n))
                     self.state[i] = n
             self.pixels.show()
             dt = timer()-t0
