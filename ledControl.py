@@ -179,7 +179,7 @@ class LEDControl(Thread,Logger):
             t0 = timer()
             r = self.getNextRingState()
             e = self.getNextEyeState()
-            ns = r + e
+            ns = list(r) + list(e)
             for idx,(i,n,o) in enumerate(zip(self._ORDER,ns,self.state)):
                 if n != o:                    
                     self.pixels.set_pixel(i,self.Brightness(n))
