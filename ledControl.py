@@ -164,7 +164,7 @@ class LEDControl(Thread,Logger):
                     currentColor = newColor
                     color = next(colorTransition)
                 newState[idx] = color
-            for i in self.frames(moveTime):
+            for i in range(self.frames(moveTime)):
                 yield newState            
             current += 1
             if current > self.ringLength:
