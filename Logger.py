@@ -1,10 +1,10 @@
 import logging 
 from logging.handlers import RotatingFileHandler
-
+from pathlib import Path
 from collections import deque
 
 def systemLogFile(logfileName):
-    folder = ('.')
+    folder = Path(__file__).parent
     fh = RotatingFileHandler( folder / logfileName, maxBytes=2**23, backupCount=10)
     # fh.setLevel(level)
     fh.setFormatter(logging.Formatter(
