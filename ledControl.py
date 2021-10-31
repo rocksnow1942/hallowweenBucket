@@ -148,6 +148,7 @@ class LEDControl(Thread,Logger):
         "cycle ring"
         current = 0
         onCount = 2
+        moveTime = 1
         transitionTime = 2
         currentColor = self.color('green')
         colorTransition = self.transition(self.color('white'),self.color('green'),transitionTime)
@@ -163,7 +164,8 @@ class LEDControl(Thread,Logger):
                     currentColor = newColor
                     color = next(colorTransition)
                 newState[idx] = color
-            yield newState
+            for i in self.frames(moveTime):
+                yield newState            
             current += 1
             if current > self.ringLength:
                 current = 0
