@@ -57,7 +57,7 @@ class LEDControl(Thread,Logger):
         self._FPS = 24     
         self.ringGenerator = None
         self.eyeGenerator = None
-        self.brightness = 100 # between 0 - 100
+        self.brightness = 70 # between 0 - 100
     
     @property
     def eyeLength(self):
