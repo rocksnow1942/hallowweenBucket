@@ -1,4 +1,6 @@
 from threading import Thread
+
+from websockets import framing
 from Logger import Logger
 import board
 import busio
@@ -32,6 +34,19 @@ class LEDControl(Thread,Logger):
     _EYE_ORDER = [8,9,10,11]
     _ORDER = [1,2,3,6,7,4,5, # ring order
                 8,9,10,11] # eye order
+    _NAMED_COLOR = {
+            'red':[255,0,0],
+            'green':[0,255,0],
+            'blue':[0,0,255],
+            'yellow':[255,255,0],
+            'cyan':[0,255,255],
+            'purple':[255,0,255],
+            'white':[255,255,255],
+            'black':[0,0,0],
+            'orange':[255,165,0],            
+            'pink':[255,192,203],
+            'brown':[165,42,42],            
+        }
     def __init__(self,main):
         self.main = main
         super().__init__(daemon=True)
@@ -51,8 +66,17 @@ class LEDControl(Thread,Logger):
     def ringLength(self):
         return len(self._RING_ORDER)
 
+    def frames(self,duration=1):
+        return int(duration*self._FPS)
+
+    def color(self,name=None):
+        "return a named color"
+        if not name:
+            name = random.choice(list(self._NAMED_COLOR.keys()))            
+        return self._NAMED_COLOR.get(name,[0,0,0])
+
     def randColor(self):
-        return random.randint(0,255)
+        return [random.randint(0,255) for _ in range(3)]
 
     def show(self,mode=''):
         self.debug(f'Showing LED mode {mode}')
@@ -63,7 +87,7 @@ class LEDControl(Thread,Logger):
         else:
             self.debug(f'LED mode {mode} not found')
 
-    @registerMode('Blink')
+    @registerMode('White Blink')
     def eyeBlink(self):
         "eye blink"
         state = 0
@@ -76,12 +100,12 @@ class LEDControl(Thread,Logger):
                 state = 1 if state == 0 else 0
                 last = self._FPS
 
-    @registerMode('Random')
+    @registerMode('Random Blink')
     def eyeBlinkRand(self):
         "eye blink"
         state = 0
         last = self._FPS / 2
-        eyc = [ [state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
+        eyc = [ self.randColor() for i in range(self.eyeLength)]
         while 1:
             if last:
                 yield eyc
@@ -89,8 +113,41 @@ class LEDControl(Thread,Logger):
             if last == 0:
                 state = 1 if state == 0 else 0
                 last = self._FPS
-                eyc = [ [state * self.randColor() for j in range(3)] for i in range(self.eyeLength)]
+                if state:
+                    eyc = [ self.randColor() for i in range(self.eyeLength)]
+                else:
+                    eyc = [ [0,0,0] ] * self.eyeLength
+
+    @registerMode('Random Breath')
+    def eyeBreathRand(self):
+        "eye breath"                
+        while 1:
+            eye  = [self.color() for i in range(self.eyeLength)]
+            for e in zip(self.breath(i,duration=1) for i in eye):
+                yield e
+            # keep dark for 0.3 seconds
+            for _ in range(self.frames(duration = 0.3)):
+                yield [self.color('black')]* self.eyeLength
+    
+
+        
+    def transition(self,f,t,duration):
+        "transition from f to t, over duration seconds"
+        frames = int(duration*self._FPS)
+        for i in range(frames):
+            yield [ fi + (ti-fi) / (frames-1) * i  for fi,ti in zip(f,t)]
             
+
+    def breath(self,color=[255,255,255],duration=1):
+        "breath effect, from dark to color, then back to dark, total last for duration seconds"
+        yield from self.transition([0,0,0],color,duration/2)
+        yield from self.transition(color,[0,0,0],duration/2)
+    
+        
+
+
+        
+        
     
     def getNextRingState(self):
         "return next ring state"
