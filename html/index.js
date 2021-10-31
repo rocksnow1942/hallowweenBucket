@@ -1,6 +1,6 @@
 console.log('hellow js!')
 
-var $ = document.getElementById
+var $ = document.getElementById.bind(document)
 
 class App {
     constructor () {

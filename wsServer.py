@@ -202,6 +202,7 @@ class ClientModule(Thread,Logger):
         }
         """
         action = msg.pop('action',None) 
+        self.debug(f'Received MSG{msg}')
         if not action:
             self.error(f"Client Invalid message {msg}")
             return {'status':'error', 'data': 'Invalid Message','action':action}
