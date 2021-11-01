@@ -318,7 +318,7 @@ class LEDControl(Thread,Logger):
 
 
 
-            if self.fullrandom and t0-tStart > self.fullrandomDuration:
+            if self.fullrandom and (t0-tStart > self.fullrandomDuration):
                 tStart = timer()
                 self.randomModeSelect()
                 
