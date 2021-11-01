@@ -59,7 +59,7 @@ class LEDControl(Thread,Logger):
         self.eyeGenerator = None
         self.brightness = 70 # between 0 - 100
         self.fullrandom=True
-        self.fullrandomDuration = 120 # seconds
+        self.fullrandomDuration = 60 # seconds
         self.randomModeSelect()
     
     @property
@@ -106,10 +106,29 @@ class LEDControl(Thread,Logger):
                 last -= 1
             if last == 0:
                 state = 1 if state == 0 else 0
-                last = self._FPS
+                last = self._FPS/2
                 if state:
                     eyc = [ self.randColor() for i in range(self.eyeLength)]
                 else:
+                    eyc = [ [0,0,0] ] * self.eyeLength
+
+    @registerMode('Fast Blink')
+    def eyeBlinkRand(self):
+        "eye blink"
+        state = 1
+        last = self.frames(duration=0.1)
+        eyc = [ self.randColor() for i in range(self.eyeLength)]
+        while 1:
+            if last:
+                yield eyc
+                last -= 1
+            if last == 0:
+                state = 1 if state == 0 else 0                
+                if state:
+                    last = self.frames(duration=0.1)
+                    eyc = [ self.randColor() for i in range(self.eyeLength)]
+                else:
+                    last = self.frames(duration=0.15)
                     eyc = [ [0,0,0] ] * self.eyeLength
 
     @registerMode('Full random')
@@ -181,6 +200,38 @@ class LEDControl(Thread,Logger):
             current += 1
             if current > self.ringLength:
                 current = 0
+
+    @registerMode('Blink Ring')
+    def ringBlink(self):
+        state = 0
+        last = self.frames(duration=0.1)
+        colors = ['red','green','blue','cyan','purple','white']
+        colrIdx = 0
+        eyc = [ self.color('red') for i in range(self.ringLength)]
+        while 1:
+            if last:
+                yield eyc
+                last -= 1
+            if last == 0:
+                state = 1 if state == 0 else 0
+                last = self.frames(duration=0.1) if state else self.frames(duration=0.15)
+                colrIdx = (colrIdx + 1) % len(colors)
+                if state:
+                    eyc = [ self.color(colors[colrIdx]) for i in range(self.ringLength)]
+                else:
+                    eyc = [ self.color('black') ] * self.ringLength
+
+    @registerMode('Wheel Bink')
+    def ringWheelBlink(self):
+        wheel = self.ringRandomWheel()
+        blink = self.ringBlink()        
+        while 1:
+            for i in range(self.frames(duration=5)):
+                yield next(wheel)
+            for j in range(self.frames(duration=3)):
+                yield next(blink)
+            
+
 
     @registerMode('Breath')
     def ringBreathCycle(self):
