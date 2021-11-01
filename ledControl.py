@@ -59,7 +59,7 @@ class LEDControl(Thread,Logger):
         self.eyeGenerator = None
         self.brightness = 70 # between 0 - 100
         self.fullrandom=True
-        self.fullrandomDuration = 60 # seconds
+        self.fullrandomDuration = 20 # seconds
         self.randomModeSelect()
     
     @property
