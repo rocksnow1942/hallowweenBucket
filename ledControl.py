@@ -293,7 +293,7 @@ class LEDControl(Thread,Logger):
 
     def randomModeSelect(self):
         "random mode select"
-        eye = random.choice([i for i in MODES['eye'] if i!='eyeFullRandomON'])[1]
+        eye = random.choice([i for i in MODES['eye'] if i[1]!='eyeFullRandomON'])[1]
         ring = random.choice(MODES['ring'])[1]
         self.show(eye)
         self.show(ring)
