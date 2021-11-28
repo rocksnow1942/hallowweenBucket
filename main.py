@@ -51,7 +51,7 @@ class Main(Logger):
             time.sleep(10)
             if not wifi_connected():
                 self.debug('Wifi not connected, Switching to AP mode')
-                # self.enableAP()
+                self.enableAP()
            
 
 # /home/pi/hallowweenBucket/main.py

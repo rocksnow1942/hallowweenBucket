@@ -5,7 +5,6 @@ import sys
 import json,os
 from pathlib import Path
 import mimetypes
-import zlib
 from Logger import Logger
 from ledControl import MODES
 
